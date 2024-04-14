@@ -1,3 +1,5 @@
+import 'package:desafio_marvel_objective/models/marvel_series.dart';
+import 'package:desafio_marvel_objective/models/marvel_events.dart';
 import 'package:flutter/material.dart';
 import 'package:desafio_marvel_objective/repository/marvel_heroes_repository.dart';
 import 'package:desafio_marvel_objective/components/search_text_field.dart';
@@ -12,7 +14,6 @@ class MarvelHeroes extends StatefulWidget {
 class _MarvelHeroesState extends State<MarvelHeroes> {
   @override
   Widget build(BuildContext context) {
-    // COLOQUE "BUSCA MARVEL" EM NEGRITO E "TESTE FRONT-END" NORMAL Na esquerda e "WESLEY TAKATSU" na direita
     return MaterialApp(
       title: 'MARVEL HEROES',
       theme: ThemeData(
@@ -27,8 +28,6 @@ class _MarvelHeroesState extends State<MarvelHeroes> {
 class MarvelHeroesPage extends StatefulWidget {
   const MarvelHeroesPage({Key? key}) : super(key: key);
 
-  // final String title;
-
   @override
   State<MarvelHeroesPage> createState() => _MarvelHeroesPageState();
 }
@@ -40,7 +39,13 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
   void initState() {
     super.initState();
     marvelHeroesRepository = MarvelHeroesRepository();
+    marvelHeroesRepository.addListener(() {
+      setState(() {});
+    });
   }
+
+  final int numberOfSeriesDisplayed = 3;
+  final int numberOfEventsDisplayed = 3;
 
   final TextStyle _textStyleBlackLandscape = const TextStyle(
     color: Color(0xFFD42026),
@@ -86,9 +91,21 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
     height: 1.2,
   );
 
+  final TextStyle _textStyleTableContent = const TextStyle(
+      color: Color(0xFF4E4E4E),
+      fontSize: 21,
+      fontFamily: 'Roboto-Regular',
+      letterSpacing: 0,
+      height: 1.1);
+
   final double borderSideSize = 42;
   final double borderTopBottonSizePortrait = 12;
   final double borderTopBottonSizeLandscape = 34;
+
+  int mouseOverIndex = -1;
+
+  int _currentPage = 1;
+  int lastPage = 0;
 
   void _setPage(int page) {
     setState(() {
@@ -114,16 +131,9 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
         ((MediaQuery.of(context).size.width - 2 * borderSideSize) * 0.50) - 10;
     double tableColumnTitleBoxHeight = 37.0;
 
-    print("largura da primeira coluna: $firstColumnWidth");
-    print("largura da segunda coluna: $secondColumnWidth");
-    print("largura da terceira coluna: $thirdColumnWidth");
-    print("tamanho da tela: ${MediaQuery.of(context).size.width}");
-
     return Scaffold(
       appBar: AppBar(
-        // menor tamanho da barra de título
         toolbarHeight: 15,
-        // fonte pequena de 8, negrito
         title: const Text(
           'Desafio Objective em Flutter: Wesley Sieiro Takatsu de Araujo - (21) 99316-0875',
           style: TextStyle(
@@ -136,75 +146,329 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
           ),
         ),
       ),
-      body: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: mobileView
-              ? EdgeInsets.fromLTRB(0, 12, 0, 24)
-              : EdgeInsets.fromLTRB(borderSideSize, 20, borderSideSize, 16),
-          child: Column(
-            children: [
-              searchArea(context, mobileView, boxWidth, mobileViewPortrait),
-              Container(
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: !mobileView
-                      ? EdgeInsets.fromLTRB(0, 0, 0, 0)
+                  padding: mobileView
+                      ? EdgeInsets.fromLTRB(0, 12, 0, 24)
                       : EdgeInsets.fromLTRB(
-                          borderSideSize, 0, borderSideSize, 0),
-                  child: searchContainer(mobileViewPortrait)),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          color: Color(0xFFD42026),
-                          width: mobileView
-                              ? MediaQuery.of(context).size.width
-                              : firstColumnWidth,
-                          height: tableColumnTitleBoxHeight,
+                          borderSideSize, 20, borderSideSize, 16),
+                  child: Column(
+                    children: [
+                      searchArea(
+                          context, mobileView, boxWidth, mobileViewPortrait),
+                      Container(
+                          width: MediaQuery.of(context).size.width,
                           padding: !mobileView
-                              ? EdgeInsets.only(left: 12)
-                              : EdgeInsets.only(left: 100),
-                          alignment: Alignment.centerLeft,
-                          child: mobileView
-                              ? Text('Nome', style: _textStyleTableTitle)
-                              : Text('Personagem', style: _textStyleTableTitle),
-                        ),
-                        if (!mobileView)
+                              ? EdgeInsets.fromLTRB(0, 0, 0, 0)
+                              : EdgeInsets.fromLTRB(
+                                  borderSideSize, 0, borderSideSize, 0),
+                          child: searchContainer(mobileViewPortrait)),
+                      Column(
+                        children: [
+                          tableColmunsLabels(
+                              mobileView,
+                              context,
+                              firstColumnWidth,
+                              tableColumnTitleBoxHeight,
+                              secondColumnWidth,
+                              thirdColumnWidth),
                           SizedBox(
-                            width: 10,
-                            height: tableColumnTitleBoxHeight,
+                            height: MediaQuery.of(context).size.height - 320,
+                            child: ListView.builder(
+                              itemCount: marvelHeroesRepository.heroes.length,
+                              itemBuilder: (context, index) {
+                                final displayedSeries = marvelHeroesRepository
+                                    .heroes[index].series
+                                    .take(numberOfSeriesDisplayed)
+                                    .toList();
+                                final displayedEvents = marvelHeroesRepository
+                                    .heroes[index].events
+                                    .take(numberOfEventsDisplayed)
+                                    .toList();
+                                return Column(
+                                  children: [
+                                    Container(
+                                      color: mouseOverIndex == index
+                                          ? Color(0xFFD42026).withOpacity(0.1)
+                                          : Colors.white,
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 18, 0, 18),
+                                      child: MouseRegion(
+                                        onEnter: (_) {
+                                          setState(() {
+                                            mouseOverIndex = index;
+                                          });
+                                        },
+                                        onExit: (_) {
+                                          setState(() {
+                                            mouseOverIndex = -1;
+                                          });
+                                        },
+                                        child: Row(
+                                          children: [
+                                            heroProfilePictureAndName(
+                                                mobileView,
+                                                context,
+                                                firstColumnWidth,
+                                                index),
+                                            if (!mobileView)
+                                              const SizedBox(
+                                                width: 10,
+                                                height: 50,
+                                              ),
+                                            if (!mobileView)
+                                              heroSeriesList(secondColumnWidth,
+                                                  displayedSeries),
+                                            if (!mobileView)
+                                              const SizedBox(
+                                                width: 10,
+                                                height: 50,
+                                              ),
+                                            if (!mobileView)
+                                              heroEventsList(thirdColumnWidth,
+                                                  displayedEvents),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 1,
+                                      color: Color(0xFFD42026),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
                           ),
-                        if (!mobileView)
-                          Container(
-                            color: Color(0xFFD42026),
-                            width: secondColumnWidth,
-                            height: tableColumnTitleBoxHeight,
-                            padding: const EdgeInsets.only(left: 12),
-                            alignment: Alignment.centerLeft,
-                            child: Text('Séries', style: _textStyleTableTitle),
-                          ),
-                        if (!mobileView)
-                          SizedBox(
-                            width: 10,
-                            height: tableColumnTitleBoxHeight,
-                          ),
-                        if (!mobileView)
-                          Container(
-                            color: Color(0xFFD42026),
-                            width: thirdColumnWidth,
-                            height: tableColumnTitleBoxHeight,
-                            padding: const EdgeInsets.only(left: 12),
-                            alignment: Alignment.centerLeft,
-                            child: Text('Eventos', style: _textStyleTableTitle),
-                          ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  )),
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 32,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back,
+                      size: 16, color: Color(0xFFD42026)),
+                  onPressed: () {
+                    _setPage(marvelHeroesRepository.currentPage - 1);
+                  },
+                ),
+                const SizedBox(width: 10),
+
+                for (int i = (marvelHeroesRepository.currentPage < 3)
+                        ? 1
+                        : (marvelHeroesRepository.currentPage < 4)
+                            ? 2
+                            : (marvelHeroesRepository.currentPage < 5)
+                                ? 3
+                                : (marvelHeroesRepository.totalPages < 6)
+                                    ? 1
+                                    : marvelHeroesRepository.currentPage - 2;
+                    i <=
+                        ((marvelHeroesRepository.currentPage < 3)
+                            ? 6
+                            : (marvelHeroesRepository.currentPage < 4)
+                                ? 7
+                                : (marvelHeroesRepository.currentPage < 5)
+                                    ? 8
+                                    : (marvelHeroesRepository.totalPages < 6)
+                                        ? marvelHeroesRepository.totalPages
+                                        : marvelHeroesRepository.currentPage +
+                                            3);
+                    i++)
+                  GestureDetector(
+                    onTap: () {
+                      print('Página $i');
+                      marvelHeroesRepository.setPage(i - 1);
+                    },
+                    child: marvelHeroesRepository.totalPages >= i
+                        ? Container(
+                            width: 24,
+                            height: 24,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: i - 1 == marvelHeroesRepository.currentPage
+                                  ? const Color(0xFFD42026)
+                                  : const Color(0xFF4E4E4E),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '$i',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
+                  ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward,
+                      size: 16, color: Color(0xFFD42026)),
+                  onPressed: () {
+                    _setPage(marvelHeroesRepository.currentPage + 1);
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 24,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 12,
+            color: Color(0xFFD42026),
+          )
+        ],
+      ),
+    );
+  }
+
+  Row tableColmunsLabels(
+      bool mobileView,
+      BuildContext context,
+      double firstColumnWidth,
+      double tableColumnTitleBoxHeight,
+      double secondColumnWidth,
+      double thirdColumnWidth) {
+    return Row(
+      children: [
+        Container(
+          color: Color(0xFFD42026),
+          width:
+              mobileView ? MediaQuery.of(context).size.width : firstColumnWidth,
+          height: tableColumnTitleBoxHeight,
+          padding: !mobileView
+              ? EdgeInsets.only(left: 12)
+              : EdgeInsets.only(left: 100),
+          alignment: Alignment.centerLeft,
+          child: mobileView
+              ? Text('Nome', style: _textStyleTableTitle)
+              : Text('Personagem', style: _textStyleTableTitle),
+        ),
+        if (!mobileView)
+          SizedBox(
+            width: 10,
+            height: tableColumnTitleBoxHeight,
+          ),
+        if (!mobileView)
+          Container(
+            color: Color(0xFFD42026),
+            width: secondColumnWidth,
+            height: tableColumnTitleBoxHeight,
+            padding: const EdgeInsets.only(left: 12),
+            alignment: Alignment.centerLeft,
+            child: Text('Séries', style: _textStyleTableTitle),
+          ),
+        if (!mobileView)
+          SizedBox(
+            width: 10,
+            height: tableColumnTitleBoxHeight,
+          ),
+        if (!mobileView)
+          Container(
+            color: Color(0xFFD42026),
+            width: thirdColumnWidth,
+            height: tableColumnTitleBoxHeight,
+            padding: const EdgeInsets.only(left: 12),
+            alignment: Alignment.centerLeft,
+            child: Text('Eventos', style: _textStyleTableTitle),
+          ),
+      ],
+    );
+  }
+
+  SizedBox heroSeriesList(
+      double secondColumnWidth, List<MarvelSeries> displayedSeries) {
+    return SizedBox(
+      width: secondColumnWidth,
+      child: Wrap(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: displayedSeries
+                .map((series) => Text(
+                      series.name,
+                      style: _textStyleTableContent,
+                    ))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  SizedBox heroEventsList(
+      double thirdColumnWidth, List<MarvelEvents> displayedEvents) {
+    return SizedBox(
+      width: thirdColumnWidth,
+      child: Wrap(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: displayedEvents
+                .map((events) => Text(
+                      events.name,
+                      style: _textStyleTableContent,
+                    ))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container heroProfilePictureAndName(bool mobileView, BuildContext context,
+      double firstColumnWidth, int index) {
+    return Container(
+      width: mobileView ? MediaQuery.of(context).size.width : firstColumnWidth,
+      height: 80,
+      padding: mobileView
+          ? const EdgeInsets.only(left: 31)
+          : const EdgeInsets.only(left: 12),
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: NetworkImage(
+                    '${marvelHeroesRepository.heroes[index].thumbnail}.${marvelHeroesRepository.heroes[index].thumbnailExtension}'),
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Wrap(
+            children: [
+              Container(
+                width: firstColumnWidth - 80,
+                child: Text(
+                  marvelHeroesRepository.heroes[index].name,
+                  style: _textStyleTableContent,
                 ),
               ),
             ],
-          )),
+          ),
+        ],
+      ),
     );
   }
 
@@ -257,10 +521,10 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
               ],
             ),
             if (!mobileView)
-            SizedBox(
-              height: 40,
-              child: Text('WESLEY TAKATSU', style: _textStyleLightLandscape),
-            ),
+              SizedBox(
+                height: 40,
+                child: Text('WESLEY TAKATSU', style: _textStyleLightLandscape),
+              ),
           ],
         ));
   }
@@ -289,11 +553,12 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
           ),
           SizedBox(
             height: 31,
-            width: !mobileViewPortrait ? 400 : MediaQuery.of(context).size.width,
+            width:
+                !mobileViewPortrait ? 400 : MediaQuery.of(context).size.width,
             child: TextField(
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10), // Ajuste este valor para alterar a altura
+                    vertical: 10),
                 isCollapsed: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(0),
@@ -304,7 +569,9 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                 ),
               ),
               onChanged: (value) {
-                print('Texto alterado: $value');
+                marvelHeroesRepository.searchName = value;
+                marvelHeroesRepository.currentPage = 0;
+                marvelHeroesRepository.searchHero(value);
               },
               style: TextStyle(fontSize: 16),
             ),

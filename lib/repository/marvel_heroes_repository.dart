@@ -8,8 +8,11 @@ import 'package:crypto/crypto.dart';
 class MarvelHeroesRepository extends ChangeNotifier {
   List<MarvelHero> heroes = [];
   // bool isSorted = false;
-  int itensPerPage = 4;
+  int itensPerPage = 10;
   int currentPage = 0;
+  int totalResults = 0;
+  String searchName = '';
+  int totalPages = 0;
 
   MarvelHeroesRepository() {
     initRepository();
@@ -24,10 +27,8 @@ class MarvelHeroesRepository extends ChangeNotifier {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String hash = md5.convert(utf8.encode(timestamp + dotenv.env['MARVELPRIVATEKEY']! + dotenv.env['MARVELPUBLICKEY']!)).toString();
     
-    // print(hash);
 
     String url = '${dotenv.env['MARVELCHARACTERSURL']!.toString()}?ts=$timestamp&apikey=${dotenv.env['MARVELPUBLICKEY']!}&hash=${hash}&limit=$itensPerPage&offset=${(currentPage)*itensPerPage}';
-    // print(url);
 
     final response = await http.get(
       Uri.parse(url)
@@ -35,14 +36,59 @@ class MarvelHeroesRepository extends ChangeNotifier {
 
     final json = jsonDecode(response.body) as Map;
 
-    // print(json['data']);
+    totalResults = json['data']['total'];
+    // print('totalResults: $totalResults');
+
+    totalPages = (totalResults / itensPerPage).ceil();
 
     List<dynamic> data = json['data']['results'];
     heroes = data.map((e) => MarvelHero.fromJson(e)).toList();
-    // //print('response do GET:');
-    // //print(json);
+
     print("Repository inicializado");
-    // notifyListeners();
+    notifyListeners();
+  }
+
+
+  searchHero(String name) async {
+    if(name.isEmpty) {
+      return;
+    }
+    // print("iniciando a busca...");
+
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    String hash = md5.convert(utf8.encode(timestamp + dotenv.env['MARVELPRIVATEKEY']! + dotenv.env['MARVELPUBLICKEY']!)).toString();
+    
+
+    String url = '${dotenv.env['MARVELCHARACTERSURL']!.toString()}?ts=$timestamp&apikey=${dotenv.env['MARVELPUBLICKEY']!}&hash=${hash}&limit=$itensPerPage&offset=${(currentPage)*itensPerPage}&nameStartsWith=$name';
+
+    final response = await http.get(
+      Uri.parse(url)
+    );
+
+    final json = jsonDecode(response.body) as Map;
+
+    totalResults = json['data']['total'];
+    // print('totalResults: $totalResults');
+
+    totalPages = (totalResults / itensPerPage).ceil();
+
+    List<dynamic> data = json['data']['results'];
+    heroes = data.map((e) => MarvelHero.fromJson(e)).toList();
+
+    // print("Busca finalizada");
+    notifyListeners();
+  }
+
+  setPage(int page) {
+    currentPage = page;
+    print("currentPage: $currentPage");
+
+    if(searchName.isNotEmpty) {
+      searchHero(searchName);
+    } else {
+      initRepository();
+    }
+    notifyListeners();
   }
 
 }
