@@ -2,7 +2,7 @@ import 'package:desafio_marvel_objective/models/marvel_series.dart';
 import 'package:desafio_marvel_objective/models/marvel_events.dart';
 
 class MarvelHero {
-  final String id;
+  final int id;
   final String name;
   final String description;
   final String thumbnail;
@@ -22,7 +22,7 @@ class MarvelHero {
 
   factory MarvelHero.fromJson(Map<String, dynamic> json) {
     return MarvelHero(
-      id: json['id'] ?? '',
+      id: json['id'] ?? 0,
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       thumbnail: json['thumbnail']['path'] ?? '',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:desafio_marvel_objective/repository/marvel_heroes_repository.dart';
 
 class MarvelHeroes extends StatefulWidget {
   const MarvelHeroes({Key? key}) : super(key: key);
@@ -32,7 +33,13 @@ class MarvelHeroesPage extends StatefulWidget {
 }
 
 class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
-  int _counter = 0;
+  late MarvelHeroesRepository marvelHeroesRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    marvelHeroesRepository = MarvelHeroesRepository();
+  }
 
   final TextStyle _textStyleBlack = const TextStyle(
     color: Color(0xFFD42026),
@@ -52,9 +59,12 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
     fontWeight: FontWeight.normal,
   );
 
-  void _incrementCounter() {
+  final double borderSideSize = 42 - 16;
+
+  void _setPage(int page) {
     setState(() {
-      _counter++;
+      marvelHeroesRepository.currentPage = page;
+      marvelHeroesRepository.initRepository();
     });
   }
 
@@ -66,18 +76,16 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
         appBar: AppBar(
           title: Container(
             width: MediaQuery.of(context).size.width,
-            padding: mobileView // 42 - 16 = 26 (espaçamento esperado)
-                ? const EdgeInsets.fromLTRB(26, 12, 26, 12)
-                : const EdgeInsets.fromLTRB(26, 20, 26, 34),
+            padding: mobileView
+                ? EdgeInsets.fromLTRB(borderSideSize, 12, borderSideSize, 12)
+                : EdgeInsets.fromLTRB(borderSideSize, 20, borderSideSize, 34),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
-                  //largura total da tela
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      // largura de 600px
+                    SizedBox(
                       width: 450,
                       child: Text.rich(
                         TextSpan(
@@ -92,19 +100,17 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                         ),
                       ),
                     ),
-                    Container(
-                      // largura de 600px
+                    SizedBox(
                       width: 450,
                       child: Row(
-                        // alinhar o texto a esquerda
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: 4, // Altura do retângulo
+                            height: 4,
                             child: Container(
-                              width: 54, // Largura do retângulo
+                              width: 54,
                               color: Colors
-                                  .red, // Cor do retângulo (altere conforme necessário)
+                                  .red,
                             ),
                           ),
                         ],
@@ -117,53 +123,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
             ),
           ),
         ),
-        body: Center());
+        body: const Center());
 
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Container(
-    //       width: MediaQuery.of(context).size.width,
-    //       // background na cor azul
-    //       decoration: const BoxDecoration(
-    //         color: Color.fromARGB(255, 32, 53, 212),
-    //       ),
-    //       padding: mobileView
-    //           ? const EdgeInsets.fromLTRB(42, 12, 42, 12)
-    //           : const EdgeInsets.fromLTRB(42, 20, 42, 34),
-    //       child: Column(children: [
-    //         Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //           children: [
-    //             Text.rich(
-    //               TextSpan(
-    //                 text: 'BUSCA MARVEL ',
-    //                 style: _textStyleBlack,
-    //                 children: <TextSpan>[
-    //                   TextSpan(
-    //                     text: 'TESTE FRONT-END',
-    //                     style: _textStyleLight,
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //             if (mobileView) Text('WESLEY TAKATSU', style: _textStyleLight),
-    //           ],
-    //         ),
-    //         Padding(
-    //           padding: const EdgeInsets.only(left: 42),
-    //           child: SizedBox(
-    //             height: 4, // Altura do retângulo
-    //             child: Container(
-    //               width: 54, // Largura do retângulo
-    //               color: Colors
-    //                   .red, // Cor do retângulo (altere conforme necessário)
-    //             ),
-    //           ),
-    //         ),
-    //       ]),
-    //     ),
-    //   ),
-    //   body: Center(),
-    // );
   }
 }

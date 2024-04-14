@@ -1,5 +1,5 @@
 class MarvelSeries {
-  final String id;
+  final int id;
   final String name;
   final String resourceURI;
   
@@ -11,7 +11,7 @@ class MarvelSeries {
 
   factory MarvelSeries.fromJson(Map<String, dynamic> json) {
     return MarvelSeries(
-      id: json['id'] ?? '',
+      id: json['id'] ?? 0,
       name: json['name'] ?? '',
       resourceURI: json['resourceURI'] ?? '',
     );
