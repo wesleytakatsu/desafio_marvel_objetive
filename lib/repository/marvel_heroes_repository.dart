@@ -24,10 +24,10 @@ class MarvelHeroesRepository extends ChangeNotifier {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String hash = md5.convert(utf8.encode(timestamp + dotenv.env['MARVELPRIVATEKEY']! + dotenv.env['MARVELPUBLICKEY']!)).toString();
     
-    print(hash);
+    // print(hash);
 
     String url = '${dotenv.env['MARVELCHARACTERSURL']!.toString()}?ts=$timestamp&apikey=${dotenv.env['MARVELPUBLICKEY']!}&hash=${hash}&limit=$itensPerPage&offset=${(currentPage)*itensPerPage}';
-    print(url);
+    // print(url);
 
     final response = await http.get(
       Uri.parse(url)
@@ -35,13 +35,13 @@ class MarvelHeroesRepository extends ChangeNotifier {
 
     final json = jsonDecode(response.body) as Map;
 
-    print(json['data']);
+    // print(json['data']);
 
     List<dynamic> data = json['data']['results'];
     heroes = data.map((e) => MarvelHero.fromJson(e)).toList();
     // //print('response do GET:');
     // //print(json);
-
+    print("Repository inicializado");
     // notifyListeners();
   }
 
