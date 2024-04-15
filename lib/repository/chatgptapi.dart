@@ -16,7 +16,7 @@ class ChatGptApiRepository extends ChangeNotifier {
 
   askAboutHero(String hero) async {
     Map<String, dynamic> requestBody = {
-      "model": "gpt-3.5-turbo",
+      "model": "gpt-3.5-turbo-0125",
       "messages": [
         {"role": "system", "content": systemMessage},
         {"role": "user", "content": hero}
@@ -49,7 +49,7 @@ class ChatGptApiRepository extends ChangeNotifier {
 
   askAboutHeroPTBR(String hero) async {
     Map<String, dynamic> requestBody = {
-      "model": "gpt-3.5-turbo",
+      "model": "gpt-3.5-turbo-0125",
       "messages": [
         {"role": "system", "content": systemMessagePtBr},
         {"role": "user", "content": hero}
