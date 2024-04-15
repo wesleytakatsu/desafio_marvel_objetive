@@ -2,10 +2,11 @@ import 'package:desafio_marvel_objective/models/marvel_series.dart';
 import 'package:desafio_marvel_objective/models/marvel_events.dart';
 import 'package:flutter/material.dart';
 import 'package:desafio_marvel_objective/repository/marvel_heroes_repository.dart';
-import 'package:desafio_marvel_objective/components/search_text_field.dart';
+// import 'package:desafio_marvel_objective/components/search_text_field.dart';
+import 'package:desafio_marvel_objective/views/marvel_hero_details.dart';
 
 class MarvelHeroes extends StatefulWidget {
-  const MarvelHeroes({Key? key}) : super(key: key);
+  const MarvelHeroes({super.key});
 
   @override
   _MarvelHeroesState createState() => _MarvelHeroesState();
@@ -26,7 +27,7 @@ class _MarvelHeroesState extends State<MarvelHeroes> {
 }
 
 class MarvelHeroesPage extends StatefulWidget {
-  const MarvelHeroesPage({Key? key}) : super(key: key);
+  const MarvelHeroesPage({super.key});
 
   @override
   State<MarvelHeroesPage> createState() => _MarvelHeroesPageState();
@@ -104,7 +105,6 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
 
   int mouseOverIndex = -1;
 
-  int _currentPage = 1;
   int lastPage = 0;
 
   void _setPage(int page) {
@@ -153,7 +153,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
               child: Container(
                   width: MediaQuery.of(context).size.width,
                   padding: mobileView
-                      ? EdgeInsets.fromLTRB(0, 12, 0, 24)
+                      ? const EdgeInsets.fromLTRB(0, 12, 0, 24)
                       : EdgeInsets.fromLTRB(
                           borderSideSize, 20, borderSideSize, 16),
                   child: Column(
@@ -163,7 +163,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                       Container(
                           width: MediaQuery.of(context).size.width,
                           padding: !mobileView
-                              ? EdgeInsets.fromLTRB(0, 0, 0, 0)
+                              ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
                               : EdgeInsets.fromLTRB(
                                   borderSideSize, 0, borderSideSize, 0),
                           child: searchContainer(mobileViewPortrait)),
@@ -189,58 +189,65 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                                     .heroes[index].events
                                     .take(numberOfEventsDisplayed)
                                     .toList();
-                                return Column(
-                                  children: [
-                                    Container(
-                                      color: mouseOverIndex == index
-                                          ? Color(0xFFD42026).withOpacity(0.1)
-                                          : Colors.white,
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 18, 0, 18),
-                                      child: MouseRegion(
-                                        onEnter: (_) {
-                                          setState(() {
-                                            mouseOverIndex = index;
-                                          });
-                                        },
-                                        onExit: (_) {
-                                          setState(() {
-                                            mouseOverIndex = -1;
-                                          });
-                                        },
-                                        child: Row(
-                                          children: [
-                                            heroProfilePictureAndName(
-                                                mobileView,
-                                                context,
-                                                firstColumnWidth,
-                                                index),
-                                            if (!mobileView)
-                                              const SizedBox(
-                                                width: 10,
-                                                height: 50,
-                                              ),
-                                            if (!mobileView)
-                                              heroSeriesList(secondColumnWidth,
-                                                  displayedSeries),
-                                            if (!mobileView)
-                                              const SizedBox(
-                                                width: 10,
-                                                height: 50,
-                                              ),
-                                            if (!mobileView)
-                                              heroEventsList(thirdColumnWidth,
-                                                  displayedEvents),
-                                          ],
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => HeroDetails(hero: marvelHeroesRepository.heroes[index]),
+                                    ));
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        color: mouseOverIndex == index
+                                            ? Color(0xFFD42026).withOpacity(0.1)
+                                            : Colors.white,
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 18, 0, 18),
+                                        child: MouseRegion(
+                                          onEnter: (_) {
+                                            setState(() {
+                                              mouseOverIndex = index;
+                                            });
+                                          },
+                                          onExit: (_) {
+                                            setState(() {
+                                              mouseOverIndex = -1;
+                                            });
+                                          },
+                                          child: Row(
+                                            children: [
+                                              heroProfilePictureAndName(
+                                                  mobileView,
+                                                  context,
+                                                  firstColumnWidth,
+                                                  index),
+                                              if (!mobileView)
+                                                const SizedBox(
+                                                  width: 10,
+                                                  height: 50,
+                                                ),
+                                              if (!mobileView)
+                                                heroSeriesList(secondColumnWidth,
+                                                    displayedSeries),
+                                              if (!mobileView)
+                                                const SizedBox(
+                                                  width: 10,
+                                                  height: 50,
+                                                ),
+                                              if (!mobileView)
+                                                heroEventsList(thirdColumnWidth,
+                                                    displayedEvents),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      height: 1,
-                                      color: Color(0xFFD42026),
-                                    ),
-                                  ],
+                                      Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        height: 1,
+                                        color: const Color(0xFFD42026),
+                                      ),
+                                    ],
+                                  ),
                                 );
                               },
                             ),
@@ -251,7 +258,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                   )),
             ),
           ),
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 32,
             child: Row(
@@ -289,7 +296,6 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                     i++)
                   GestureDetector(
                     onTap: () {
-                      print('Página $i');
                       marvelHeroesRepository.setPage(i - 1);
                     },
                     child: marvelHeroesRepository.totalPages >= i
@@ -330,7 +336,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
           Container(
             width: MediaQuery.of(context).size.width,
             height: 12,
-            color: Color(0xFFD42026),
+            color: const Color(0xFFD42026),
           )
         ],
       ),
@@ -347,13 +353,13 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
     return Row(
       children: [
         Container(
-          color: Color(0xFFD42026),
+          color: const Color(0xFFD42026),
           width:
               mobileView ? MediaQuery.of(context).size.width : firstColumnWidth,
           height: tableColumnTitleBoxHeight,
           padding: !mobileView
-              ? EdgeInsets.only(left: 12)
-              : EdgeInsets.only(left: 100),
+              ? const EdgeInsets.only(left: 12)
+              : const EdgeInsets.only(left: 100),
           alignment: Alignment.centerLeft,
           child: mobileView
               ? Text('Nome', style: _textStyleTableTitle)
@@ -366,7 +372,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
           ),
         if (!mobileView)
           Container(
-            color: Color(0xFFD42026),
+            color: const Color(0xFFD42026),
             width: secondColumnWidth,
             height: tableColumnTitleBoxHeight,
             padding: const EdgeInsets.only(left: 12),
@@ -380,7 +386,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
           ),
         if (!mobileView)
           Container(
-            color: Color(0xFFD42026),
+            color: const Color(0xFFD42026),
             width: thirdColumnWidth,
             height: tableColumnTitleBoxHeight,
             padding: const EdgeInsets.only(left: 12),
@@ -458,7 +464,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
           ),
           Wrap(
             children: [
-              Container(
+              SizedBox(
                 width: firstColumnWidth - 80,
                 child: Text(
                   marvelHeroesRepository.heroes[index].name,
@@ -477,7 +483,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
     return Container(
         width: MediaQuery.of(context).size.width,
         padding: !mobileView
-            ? EdgeInsets.fromLTRB(0, 0, 0, 0)
+            ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
             : EdgeInsets.fromLTRB(borderSideSize, 0, borderSideSize, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -573,7 +579,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                 marvelHeroesRepository.currentPage = 0;
                 marvelHeroesRepository.searchHero(value);
               },
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
         ],

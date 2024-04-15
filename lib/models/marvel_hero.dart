@@ -1,5 +1,7 @@
 import 'package:desafio_marvel_objective/models/marvel_series.dart';
 import 'package:desafio_marvel_objective/models/marvel_events.dart';
+import 'package:desafio_marvel_objective/models/marvel_comics.dart';
+import 'package:desafio_marvel_objective/models/marvel_stories.dart';
 
 class MarvelHero {
   final int id;
@@ -9,6 +11,9 @@ class MarvelHero {
   final String thumbnailExtension;
   final List<MarvelSeries> series;
   final List<MarvelEvents> events;
+  final List<Marvelomics> comics;
+  final List<MarvelStories> stories;
+
 
   MarvelHero({
     required this.id,
@@ -18,6 +23,8 @@ class MarvelHero {
     required this.thumbnailExtension,
     required this.series,
     required this.events,
+    required this.comics,
+    required this.stories,
   });
 
   factory MarvelHero.fromJson(Map<String, dynamic> json) {
@@ -32,6 +39,12 @@ class MarvelHero {
           .toList(),
       events: (json['events']['items'] as List)
           .map((e) => MarvelEvents.fromJson(e))
+          .toList(),
+      comics: (json['comics']['items'] as List)
+          .map((e) => Marvelomics.fromJson(e))
+          .toList(),
+      stories: (json['stories']['items'] as List)
+          .map((e) => MarvelStories.fromJson(e))
           .toList(),
     );
   }

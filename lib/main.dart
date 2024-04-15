@@ -6,9 +6,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 Future main() async {
   await dotenv.load(fileName: ".env");
 
-  // mostrando a variável dotenv.env['MARVELBASEURL']; no console para testes
-  print(dotenv.env['MARVELBASEURL']);
-
   runApp(const MarvelHeroes());
 }
 

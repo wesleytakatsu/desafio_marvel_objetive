@@ -7,8 +7,7 @@ import 'package:crypto/crypto.dart';
 
 class MarvelHeroesRepository extends ChangeNotifier {
   List<MarvelHero> heroes = [];
-  // bool isSorted = false;
-  int itensPerPage = 10;
+  int itensPerPage = int.parse(dotenv.env['HEROESPERPAGE']!);
   int currentPage = 0;
   int totalResults = 0;
   String searchName = '';
