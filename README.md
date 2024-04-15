@@ -29,3 +29,7 @@ There is a ".env EXEMPLE" file that must be renamed to ".env". It must be edited
 There is an "APK" folder in the root of the project and it already has the APK built for testing using my API keys, if you want to test directly.  
   
 The app works without the ChatGPT API key, however it will not load character descriptions on the hero details screen.  
+
+## Erro 401  
+Geralmente causado por vencimento da chave da API.  
+Aconselho trocar a chave do ChatGPT pois tem limite de uso e ela é compartilhada entre alguns projetos de testes.  
