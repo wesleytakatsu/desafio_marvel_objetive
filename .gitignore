@@ -25,3 +25,9 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+
+# diretório de imagens para icones do app
+logos_png/*
+
+gerar_logos.sh
