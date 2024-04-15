@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:desafio_marvel_objective/models/marvel_hero.dart';
 import 'package:desafio_marvel_objective/repository/chatgptapi.dart';
 
-
 class HeroDetails extends StatefulWidget {
   final MarvelHero hero;
 
@@ -17,10 +16,10 @@ class _HeroDetailsState extends State<HeroDetails> {
   final double profileHeight = 144;
   final estiloTextoDescricao =
       const TextStyle(color: Colors.black, fontSize: 16);
-  final estiloTextoDescricaoTitulo =
-      const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold);
+  final estiloTextoDescricaoTitulo = const TextStyle(
+      color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold);
 
-      //instanciando o ChatGptApiRepository com o nome do herói
+  //instanciando o ChatGptApiRepository com o nome do herói
   final chatGptApiRepository = ChatGptApiRepository();
 
   @override
@@ -35,14 +34,50 @@ class _HeroDetailsState extends State<HeroDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          buildTop(),
-          buildContent(),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFD42026)),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.emoji_emotions_outlined,
+              color: Color(0xFFD42026),
+              size: 30,
+            ),
+            Text(
+              ' Hero Details',
+              style: TextStyle(
+                color: Color(0xFFD42026),
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+              ),
+            ),
+            SizedBox(width: 10),
+            Icon(
+              Icons.assignment,
+              color: Color(0xFFD42026),
+              size: 30,
+            ),
+          ],
+        ),
+        backgroundColor: const Color.fromARGB(255, 41, 8, 5),
+        elevation: 10,
+      ),
+      body: Container(
+        color: Colors.white,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            buildTop(),
+            buildContent(),
+          ],
+        ),
       ),
     );
   }
@@ -80,7 +115,7 @@ class _HeroDetailsState extends State<HeroDetails> {
   Widget buildProfileImage() => CircleAvatar(
         radius: profileHeight / 2,
         backgroundColor: Colors.grey.shade800,
-        
+
         // pega a imagem do herói
         backgroundImage: NetworkImage(
           '${widget.hero.thumbnail}.${widget.hero.thumbnailExtension}',
@@ -93,8 +128,10 @@ class _HeroDetailsState extends State<HeroDetails> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              // widget.hero.name,  
-              widget.hero.name.isEmpty ? 'A Hero Without Name' : widget.hero.name,
+              // widget.hero.name,
+              widget.hero.name.isEmpty
+                  ? 'A Hero Without Name'
+                  : widget.hero.name,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
@@ -102,15 +139,17 @@ class _HeroDetailsState extends State<HeroDetails> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              widget.hero.description.isEmpty ? 'A Hero Without Description' : widget.hero.description,
-              style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 4, 0, 255)),
+              widget.hero.description.isEmpty
+                  ? 'A Hero Without Description'
+                  : widget.hero.description,
+              style: const TextStyle(
+                  fontSize: 18, color: Color.fromARGB(255, 4, 0, 255)),
             ),
           ),
           const SizedBox(height: 6),
           const SizedBox(height: 12),
           buildTopInformation(),
           const SizedBox(height: 18),
-          
           const Divider(),
           const SizedBox(height: 12),
           buildHeroInformation(),
@@ -148,7 +187,8 @@ class _HeroDetailsState extends State<HeroDetails> {
           buildDivider(),
           buildBox(text: 'Events', info: widget.hero.events.length.toString()),
           buildDivider(),
-          buildBox(text: 'Stories', info: widget.hero.stories.length.toString()),
+          buildBox(
+              text: 'Stories', info: widget.hero.stories.length.toString()),
         ],
       );
 
@@ -184,42 +224,42 @@ class _HeroDetailsState extends State<HeroDetails> {
       );
 
   Widget buildHeroInformation() => Container(
-    padding: const EdgeInsets.all(10),
-    child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 5),
-          Text(
-            'Usando o ChatGPT para gerar uma descrição do herói em Português:',
-            style: estiloTextoDescricaoTitulo,
-            softWrap: true,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            chatGptApiRepository.messagePtBr,
-            style: estiloTextoDescricao,
-            softWrap: true,
-          ),
-          const SizedBox(height: 35),
-          // crie uma divisão
-          const Divider(),
-          const SizedBox(height: 35),
-          Text(
-            'Using ChatGPT to generate a hero description in English:',
-            style: estiloTextoDescricaoTitulo,
-            softWrap: true,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            chatGptApiRepository.message,
-            style: estiloTextoDescricao,
-            softWrap: true,
-          ),
-        ],
-      ),
-  );
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 5),
+            Text(
+              'Usando o ChatGPT para gerar uma descrição do herói em Português:',
+              style: estiloTextoDescricaoTitulo,
+              softWrap: true,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              chatGptApiRepository.messagePtBr,
+              style: estiloTextoDescricao,
+              softWrap: true,
+            ),
+            const SizedBox(height: 35),
+            // crie uma divisão
+            const Divider(),
+            const SizedBox(height: 35),
+            Text(
+              'Using ChatGPT to generate a hero description in English:',
+              style: estiloTextoDescricaoTitulo,
+              softWrap: true,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 5),
+            Text(
+              chatGptApiRepository.message,
+              style: estiloTextoDescricao,
+              softWrap: true,
+            ),
+          ],
+        ),
+      );
 }
