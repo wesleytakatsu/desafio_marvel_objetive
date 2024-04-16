@@ -32,4 +32,7 @@ The app works without the ChatGPT API key, however it will not load character de
 
 ## Erro 401  
 Geralmente causado por vencimento da chave da API.  
-Aconselho trocar a chave do ChatGPT pois tem limite de uso e ela é compartilhada entre alguns projetos de testes.  
+
+## Node  
+A nova atualização conta com o uso de um servidor Node como intermediário pois a chave API do ChatGPT não pode estar embarcado na aplicação final.  
+Foi então ajustado para que o servidor dedicado seja o intermediador dessa comunucação.  
