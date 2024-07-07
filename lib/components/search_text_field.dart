@@ -5,10 +5,10 @@ class SearchContainer extends StatelessWidget {
   final Function(String) onChanged;
 
   const SearchContainer({
-    Key? key,
+    super.key,
     required this.mobileViewPortrait,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -11,7 +11,7 @@ class MarvelHero {
   final String thumbnailExtension;
   final List<MarvelSeries> series;
   final List<MarvelEvents> events;
-  final List<Marvelomics> comics;
+  final List<MarvelComics> comics;
   final List<MarvelStories> stories;
 
 
@@ -41,7 +41,7 @@ class MarvelHero {
           .map((e) => MarvelEvents.fromJson(e))
           .toList(),
       comics: (json['comics']['items'] as List)
-          .map((e) => Marvelomics.fromJson(e))
+          .map((e) => MarvelComics.fromJson(e))
           .toList(),
       stories: (json['stories']['items'] as List)
           .map((e) => MarvelStories.fromJson(e))

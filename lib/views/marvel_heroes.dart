@@ -135,7 +135,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
       appBar: AppBar(
         toolbarHeight: 15,
         title: const Text(
-          'Desafio Objective em Flutter: Wesley Sieiro Takatsu de Araujo - (21) 99316-0875',
+          'Projeto Flutter: Wesley Sieiro Takatsu de Araujo - (21) 99316-0875',
           style: TextStyle(
             color: Color(0xFFD42026),
             fontSize: 8,
@@ -199,7 +199,7 @@ class _MarvelHeroesPageState extends State<MarvelHeroesPage> {
                                     children: [
                                       Container(
                                         color: mouseOverIndex == index
-                                            ? Color(0xFFD42026).withOpacity(0.1)
+                                            ? const Color(0xFFD42026).withOpacity(0.1)
                                             : Colors.white,
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 18, 0, 18),

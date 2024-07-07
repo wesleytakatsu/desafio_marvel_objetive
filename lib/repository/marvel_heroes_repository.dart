@@ -20,14 +20,14 @@ class MarvelHeroesRepository extends ChangeNotifier {
 
 
   initRepository() async {
-    await Future.delayed(Duration(seconds: 3)); //remover essa linha depois dos testes
+    await Future.delayed(const Duration(seconds: 3)); //remover essa linha depois dos testes
     print("iniciando repository...");
 
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String hash = md5.convert(utf8.encode(timestamp + dotenv.env['MARVELPRIVATEKEY']! + dotenv.env['MARVELPUBLICKEY']!)).toString();
     
 
-    String url = '${dotenv.env['MARVELCHARACTERSURL']!.toString()}?ts=$timestamp&apikey=${dotenv.env['MARVELPUBLICKEY']!}&hash=${hash}&limit=$itensPerPage&offset=${(currentPage)*itensPerPage}';
+    String url = '${dotenv.env['MARVELCHARACTERSURL']!.toString()}?ts=$timestamp&apikey=${dotenv.env['MARVELPUBLICKEY']!}&hash=$hash&limit=$itensPerPage&offset=${(currentPage)*itensPerPage}';
 
     final response = await http.get(
       Uri.parse(url)
@@ -58,7 +58,7 @@ class MarvelHeroesRepository extends ChangeNotifier {
     String hash = md5.convert(utf8.encode(timestamp + dotenv.env['MARVELPRIVATEKEY']! + dotenv.env['MARVELPUBLICKEY']!)).toString();
     
 
-    String url = '${dotenv.env['MARVELCHARACTERSURL']!.toString()}?ts=$timestamp&apikey=${dotenv.env['MARVELPUBLICKEY']!}&hash=${hash}&limit=$itensPerPage&offset=${(currentPage)*itensPerPage}&nameStartsWith=$name';
+    String url = '${dotenv.env['MARVELCHARACTERSURL']!.toString()}?ts=$timestamp&apikey=${dotenv.env['MARVELPUBLICKEY']!}&hash=$hash&limit=$itensPerPage&offset=${(currentPage)*itensPerPage}&nameStartsWith=$name';
 
     final response = await http.get(
       Uri.parse(url)
